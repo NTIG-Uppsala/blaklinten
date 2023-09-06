@@ -3,7 +3,10 @@ from os import getcwd, path
 from unittest import TestCase, main
 
 from selenium import webdriver
-from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+)
 from selenium.webdriver.common.by import By
 
 
@@ -148,31 +151,42 @@ class Tests(TestCase):
         ).get_attribute("src")
         self.assertIn(".svg", src)
 
+    def helper_nav_link(self, page, link_text, html, mobile_test=False):
+        self.browser.get(path.join(getcwd(), page))
+        if self.browser.get_window_size().get("width") < 992 and mobile_test:
+            self.browser.find_element(By.CLASS_NAME, "navbar-toggler").click()
+            time.sleep(1)
+        self.browser.find_element(By.LINK_TEXT, link_text).click()
+        self.assertIn(html, self.browser.current_url)
+
     def test_navbar_mobile(self):
         self.browser.set_window_size(600, 600)
+        pages = ["index.html", "produkter.html", "om-oss.html"]
+        link_texts = ["Hem", "Produkter", "Om oss"]
 
         try:
-            nav_links = self.browser.find_elements(By.CLASS_NAME, "nav-link")
-            for nav_link in nav_links:
-                nav_link.click()
+            for page in pages:
+                for i, page2 in enumerate(pages):
+                    self.helper_nav_link(page, link_texts[i], page2)
 
             self.fail(msg="Nav link is clickable")
         except ElementNotInteractableException:
             pass
+        except NoSuchElementException:
+            pass
 
-        toggler = self.browser.find_element(By.CLASS_NAME, "navbar-toggler")
-        toggler.click()
-
-        nav_links = self.browser.find_elements(By.CLASS_NAME, "nav-link")
-        for nav_link in nav_links:
-            nav_link.click()
+        for page in pages:
+            for i, page2 in enumerate(pages):
+                self.helper_nav_link(page, link_texts[i], page2, True)
 
     def test_navbar_dektop(self):
         self.browser.set_window_size(1200, 600)
+        pages = ["index.html", "produkter.html", "om-oss.html"]
+        link_texts = ["Hem", "Produkter", "Om oss"]
 
-        nav_links = self.browser.find_elements(By.CLASS_NAME, "nav-link")
-        for nav_link in nav_links:
-            nav_link.click()
+        for page in pages:
+            for i, page2 in enumerate(pages):
+                self.helper_nav_link(page, link_texts[i], page2)
 
         try:
             toggler = self.browser.find_element(By.CLASS_NAME, "navbar-toggler")
