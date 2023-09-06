@@ -3,6 +3,7 @@ from os import getcwd, path
 from unittest import TestCase, main
 
 from selenium import webdriver
+from selenium.common.exceptions import ElementNotInteractableException
 from selenium.webdriver.common.by import By
 
 
@@ -146,6 +147,40 @@ class Tests(TestCase):
             By.XPATH, "//a[@class='navbar-brand']/img"
         ).get_attribute("src")
         self.assertIn(".svg", src)
+
+    def test_navbar_mobile(self):
+        self.browser.set_window_size(600, 600)
+
+        try:
+            nav_links = self.browser.find_elements(By.CLASS_NAME, "nav-link")
+            for nav_link in nav_links:
+                nav_link.click()
+
+            self.fail(msg="Nav link is clickable")
+        except ElementNotInteractableException:
+            pass
+
+        toggler = self.browser.find_element(By.CLASS_NAME, "navbar-toggler")
+        toggler.click()
+
+        nav_links = self.browser.find_elements(By.CLASS_NAME, "nav-link")
+        for nav_link in nav_links:
+            nav_link.click()
+
+    def test_navbar_dektop(self):
+        self.browser.set_window_size(1200, 600)
+
+        nav_links = self.browser.find_elements(By.CLASS_NAME, "nav-link")
+        for nav_link in nav_links:
+            nav_link.click()
+
+        try:
+            toggler = self.browser.find_element(By.CLASS_NAME, "navbar-toggler")
+            toggler.click()
+
+            self.fail(msg="Navbar toggler is clickable")
+        except ElementNotInteractableException:
+            pass
 
 
 if __name__ == "__main__":
