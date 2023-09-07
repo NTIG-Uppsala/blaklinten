@@ -18,6 +18,7 @@ body {
     max-width: 600px;
 }
 
+
 @media (min-height: 1080px) and (max-height: 1920px) {
     .right-col {
         max-width: 1000px;
