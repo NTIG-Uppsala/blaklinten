@@ -1,7 +1,26 @@
 body {
-    background-image: url("../images/purple_flower.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     backdrop-filter: blur(7px);
+}
+
+.main-image {
+    max-width: 50%;
+    height: auto;
+}
+
+.left-col {
+    width: 600px;
+}
+
+.right-col {
+    max-width: 600px;
+}
+
+@media (min-height: 1080px) and (max-height: 1920px) {
+    .right-col {
+        max-width: 1000px;
+    }
+
 }
